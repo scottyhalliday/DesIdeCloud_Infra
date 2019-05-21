@@ -21,9 +21,9 @@ variable "key_name" {
 }
 
 # Location of your ssh public key.  MUST BE DECRYPTED KEY AS TERRAFORM DOESN'T DO ENCYRPTED KEYS
-#variable "decrypted_private_ssh_key" {
-#  description = "The file path location of your decrypted ssh private key that matches the public key given by key_name"
-#}
+variable "decrypted_private_ssh_key" {
+  description = "The file path location of your decrypted ssh private key that matches the public key given by key_name"
+}
 
 # VPC ID where you want the DesIde Cloud to live
 variable "deside_cloud_vpc" {
@@ -89,4 +89,22 @@ variable "bastion_instance" {
 variable "bastion_admin_cidr" {
   description = "The CIDR blocks for allowed admin locations.  Can be set to 0.0.0.0/0 but then anyone can ssh into the server"
   default     = ["0.0.0.0/0"]
+}
+
+# The name of the front end web server in availability zone 1
+variable "front_end_webserver1" {
+  description = "The name to give to the web server EC2 instance in availability zone 1"
+  default     = "DesIde-Cloud1 Webserver"
+}
+
+# The name of the end application
+variable "database_table_name" {
+  description = "The database name used when creating database instance"
+  default     = "DesideCloud"
+}
+
+# The database instance
+variable "database_instance" {
+  description = "The database instance size.  See AWS documentation for available sizes"
+  default     = "db.t2.micro"
 }

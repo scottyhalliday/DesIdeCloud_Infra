@@ -2,6 +2,22 @@
 # Manages the IAM policies and roles for CodeDeploy
 #
 
+#
+# In order for CodeDeploy to work properly a series of IAM credentials must exist.  
+# An IAM user needs to be created to serve as the deployer.  This user must have 
+# the permissions to interact with Autoscaling, CodeDeploy, EC2, AWS Lambda, ECS and
+# IAM.  
+#
+# Next a service role needs to be created.  The service role is used to grant
+# permissions to an AWS service so that it can access AWS resources.  The policies
+# attached to the service role determine which AWS resources the service can access
+# and what it can do with those services.  In our case we need to create the role
+# such that it allows CodeDeploy to assume and gain the policies associated.
+#
+# Finally, an IAM instance profile for the EC2 instances is needed so that the EC2
+# instance can pull the code from the S3 bucket during deployment.  This is configured
+# in a seperate piece of terraform code, 'iam_ec2.tf'
+
 # Create a CodeDeploy User
 resource "aws_iam_user" "code_deploy_user" {
   name = "DesIde-Cloud-Code-Deployer"

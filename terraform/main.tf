@@ -27,25 +27,36 @@ resource "aws_internet_gateway" "deside_igw" {
 
 # EC2 Instance for the main login page
 resource "aws_instance" "deside_cloud_front_end1" {
-  ami           = "${var.ec2_instance_main}"
+  #ami           = "${var.ec2_instance_main}"
+  #ami           = "${data.aws_ami.deside_cloud_ami.id}"
+  ami = "ami-0fa70ebe7301a8ae1"
+
   instance_type = "${var.webserver_instance}"
 
   vpc_security_group_ids = ["${aws_security_group.sg_front_end_http.id}"]
 
   tags = {
-    Name = "DesIde-Cloud1 Webserver"
+    Name = "${var.front_end_webserver1}"
   }
 
-  subnet_id = "${aws_subnet.az1_public.id}"
-  key_name  = "${var.key_name}"
+  subnet_id            = "${aws_subnet.az1_public.id}"
+  key_name             = "${var.key_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.ec2_iam_profile.name}"
 
-  #  # Bootstrap the instance and get web server up and running
+  # Bootstrap the instance and get web server up and running
   #  provisioner "remote-exec" {
   #    inline = [
   #      "sudo apt update",
   #      "sudo apt install apache2 -y",
   #      "sudo apt install php -y",
   #      "sudo service apache2 start",
+  #      "sudo apt-get install ruby",
+  #      "sudo apt-get install wget",
+  #      "wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install",
+  #      "chmod +x ./install",
+  #      "sudo ./install auto",
+  #      "sudo service codedeploy-agent start",
+  #      "sudo service codedeploy-agent status",
   #    ]
   #
   #    # Will need ssh credentials to log in (Default user is 'ubuntu')
@@ -58,7 +69,6 @@ resource "aws_instance" "deside_cloud_front_end1" {
 
   # Let's be explicit on what we need prior to building ec2
   depends_on = ["aws_security_group.sg_front_end_http",
-    "aws_instance.deside_cloud_bastion1",
     "aws_internet_gateway.deside_igw",
   ]
 }
