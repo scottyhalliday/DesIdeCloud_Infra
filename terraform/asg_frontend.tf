@@ -1,8 +1,10 @@
 #
-# Use an autoscaling group to create the application front end
+# Use an autoscaling group (ASG) to create the application front end
 # (i.e. login screen, contact, etc)
 #
 
+# Create the ASG launch configuration using the custom built AMI that
+# contains installed software to run CodeDeploy and other items
 resource "aws_launch_configuration" "webserver_launch_config" {
   name_prefix          = "deside-cloud-lc-"
   image_id             = "${data.aws_ami.deside_cloud_ami.id}"
@@ -12,7 +14,7 @@ resource "aws_launch_configuration" "webserver_launch_config" {
   iam_instance_profile = "${aws_iam_instance_profile.ec2_iam_profile.name}"
 }
 
-# Create an autoscaling group
+# Create an autoscaling group for Availability Zone 1
 resource "aws_autoscaling_group" "webserver_front_end1" {
   name_prefix          = "deside-cloud-webserver1-asg-"
   max_size             = 1
@@ -30,11 +32,12 @@ resource "aws_autoscaling_group" "webserver_front_end1" {
   }
 }
 
-resource "aws_autoscaling_lifecycle_hook" "asg_codedeploy_hook" {
-  name                    = "asg-codedeploy-hook"
-  autoscaling_group_name  = "${aws_autoscaling_group.webserver_front_end1.name}"
-  default_result          = "CONTINUE"
-  lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
-  notification_target_arn = "${aws_sns_topic.ec2_started.arn}"
-  role_arn                = "${aws_iam_role.asg_sns_role.arn}"
-}
+#resource "aws_autoscaling_lifecycle_hook" "asg_codedeploy_hook" {
+#  name                    = "asg-codedeploy-hook"
+#  autoscaling_group_name  = "${aws_autoscaling_group.webserver_front_end1.name}"
+#  default_result          = "CONTINUE"
+#  lifecycle_transition    = "autoscaling:EC2_INSTANCE_LAUNCHING"
+#  notification_target_arn = "${aws_sns_topic.ec2_started.arn}"
+#  role_arn                = "${aws_iam_role.asg_sns_role.arn}"
+#}
+

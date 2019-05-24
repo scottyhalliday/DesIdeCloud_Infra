@@ -18,10 +18,8 @@ resource "aws_codedeploy_app" "development" {
 }
 
 # Create the Development code deployment group.  A deployment group is a set of individual
-# instances.  The deployment group contains individually tagged instances.  This application
-# will have two different deployment groups, one for 'Development' work and the second
-# 'Production'.  All deployments are done 'IN_PLACE' meaning that the servers will be down
-# while deployment is occuring.  This can be avoided by using 'Blue/Green' deployment
+# instances.  This deployment group will be tied to the autoscaling group which once the
+# initial code-deploy is called will result in the ASG to always deploy code to new instances
 resource "aws_codedeploy_deployment_group" "development" {
   app_name              = "${aws_codedeploy_app.development.name}"
   deployment_group_name = "Development"
@@ -42,11 +40,11 @@ resource "aws_codedeploy_deployment_group" "development" {
   #  }
 
   # Create a trigger to catch when the EC2 instance is ready
-  trigger_configuration {
-    trigger_events     = ["InstanceSuccess"]
-    trigger_name       = "trigger-front-end-webserver"
-    trigger_target_arn = "${aws_sns_topic.ec2_started.arn}"
-  }
+  #trigger_configuration {
+  #  trigger_events     = ["InstanceSuccess"]
+  #  trigger_name       = "trigger-front-end-webserver"
+  #  trigger_target_arn = "${aws_sns_topic.ec2_started.arn}"
+  #}
 }
 
 # TODO: Create production deployment group
