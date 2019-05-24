@@ -91,3 +91,52 @@ resource "aws_iam_instance_profile" "ec2_iam_profile" {
   name = "ec2_iam_instance_profile"
   role = "${aws_iam_role.ec2_codedeploy_role.name}"
 }
+
+# Create a notification role for Autoscaling groups at startup
+resource "aws_iam_policy" "asg_sns_policy" {
+  name        = "DC_sns_sqs_asg"
+  description = "Allow the autoscaling group to publish messages to SNS"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Resource": "*",
+            "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueUrl",
+                "sns:Publish"
+            ]
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role" "asg_sns_role" {
+  name = "DC_asg_sns_role"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "autoscaling.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+EOF
+}
+
+# Attach the DC_ec2_s3_bucket_get policy to this role
+resource "aws_iam_role_policy_attachment" "asg_sns_role_policy" {
+  role       = "${aws_iam_role.asg_sns_role.name}"
+  policy_arn = "${aws_iam_policy.asg_sns_policy.arn}"
+}

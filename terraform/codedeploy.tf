@@ -26,18 +26,26 @@ resource "aws_codedeploy_deployment_group" "development" {
   app_name              = "${aws_codedeploy_app.development.name}"
   deployment_group_name = "Development"
   service_role_arn      = "${aws_iam_role.code_deploy_role.arn}"
+  autoscaling_groups    = ["${aws_autoscaling_group.webserver_front_end1.name}"]
 
   deployment_style {
     deployment_option = "WITHOUT_TRAFFIC_CONTROL"
     deployment_type   = "IN_PLACE"
   }
 
-  ec2_tag_set {
-    ec2_tag_filter {
-      key   = "Name"
-      type  = "KEY_AND_VALUE"
-      value = "${var.front_end_webserver1}"
-    }
+  #  ec2_tag_set {
+  #    ec2_tag_filter {
+  #      key   = "Name"
+  #      type  = "KEY_AND_VALUE"
+  #      value = "${var.front_end_webserver1}"
+  #    }
+  #  }
+
+  # Create a trigger to catch when the EC2 instance is ready
+  trigger_configuration {
+    trigger_events     = ["InstanceSuccess"]
+    trigger_name       = "trigger-front-end-webserver"
+    trigger_target_arn = "${aws_sns_topic.ec2_started.arn}"
   }
 }
 
