@@ -1,0 +1,101 @@
+/*
+ * General style sheet for Deside Cloud default login
+ */
+
+/* Center image on screen */
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Login screen top bar */
+.topbar {
+    list-style-type: none;
+    border: 1px solid #003c9b;
+    background-color: #0950c1;
+    margin: 0;
+    overflow: hidden;
+    padding: 0px;
+}
+
+/* Login screen top bar welcome message*/
+.topbar_item1 {
+    display: block;
+    color: white;
+    text-align: left;
+    float: left;
+    text-decoration: none
+    padding: 14px 16px;
+    font-family: "Arial";
+    font-size: 20px;
+    font-weight: bold;
+    display: inline;
+    padding: 5px;
+}
+
+/* Login screen top bar "Get Started" link.  This link will instruct the developer
+ * how to setup their application within the newly created infrastructure
+ */
+.topbar_item2 {
+    display: block;
+    color: white;
+    text-align: right;
+    float: right;
+    text-decoration: none
+    padding: 14px 16px;
+    font-family: "Arial";
+    font-size: 20px;
+    font-weight: bold;
+    display: inline;
+    text-align: center;
+    padding: 5px;
+ }
+
+/* Get Started link customizations */
+.topbar_item2 a {
+    display: block;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+.topbar_item2 a:hover {
+    color: #7cddd7;
+}
+
+/* Login form configurations */
+.login_form {
+    width: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: "Arial";
+}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+button {
+  background-color: #4286f4;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Add a hover effect for buttons */
+button:hover {
+  opacity: 0.8;
+}

@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+
+files:
+  - source: index.php
+    destination: /var/www/html
+  - source: DesideCloud.png
+    destination: /var/www/html
+  - source: main.css
+    destination: /var/www/html
+  - source: welcome.php
+    destination: /var/www/html
+  - source: functions.php
+    destination: /var/www/html
+  - source: authenticate.php
+    destination: /var/www/html
+
+permissions:
+  - object: /var/www/html
+    pattern: index.php
+    mode: 755
+    type:
+      - file
+  - object: /var/www/html
+    pattern: DesideCloud.png
+    mode: 755
+    type:
+      - file
+
+hooks:
+  BeforeInstall: 
+    - location: scripts/cleanup.sh

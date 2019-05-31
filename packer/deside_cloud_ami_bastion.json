@@ -1,0 +1,49 @@
+{
+  "variables": {
+    "aws_region": "{{env `AWS_REGION`}}",
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "ami_description" : "DesIde Cloud application AMI Bastion Server.  Installs MySQL, AWS CLI, Python3.7",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "instance_type": "t2.micro",
+    "ssh_username": "ubuntu",
+    "ami_name": "DesIde-Cloud Bastion AMI",
+    "tags": {
+      "Name": "DesIde Cloud Bastion AMI",
+      "project": "DesIde Cloud",
+      "creator": "Scott Hall",
+      "responsible": "Scott Hall",
+      "version" : "1.0.0"
+    }
+
+  }],
+  
+  "provisioners": [
+    {
+      "type"   : "shell",
+      "inline" : ["sudo apt update",
+                  "sudo apt install mysql-server -y",
+                  "sudo apt install python3.7 -y",
+                  "sudo apt install python3-pip -y",
+                  "pip3 install awscli",
+                  "sudo apt install awscli -y",
+                  "pip3 install boto3",
+                  "sudo apt install jq -y",
+                  "pip3 install mysql-connector-python"
+      ]
+    }   
+  ]
+}

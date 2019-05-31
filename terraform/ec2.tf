@@ -73,7 +73,8 @@ resource "aws_internet_gateway" "deside_igw" {
 
 # SSH Bastion Host
 resource "aws_instance" "deside_cloud_bastion1" {
-  ami = "${var.ec2_instance_bastion}"
+  #ami = "${var.ec2_instance_bastion}"
+  ami = "${data.aws_ami.deside_cloud_ami_bastion.id}"
 
   subnet_id     = "${aws_subnet.az1_public.id}"
   instance_type = "${var.bastion_instance}"
@@ -81,7 +82,7 @@ resource "aws_instance" "deside_cloud_bastion1" {
   vpc_security_group_ids = ["${aws_security_group.sg_ssh_bastion.id}"]
 
   tags = {
-    Name = "DesIde-Cloud1 Bastion"
+    Name = "DesIde-Cloud1 Bastion" #TODO: These should be variables in the install script
   }
 
   key_name = "${var.key_name}"
