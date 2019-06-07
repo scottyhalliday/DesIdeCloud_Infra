@@ -49,3 +49,15 @@ resource "aws_codedeploy_deployment_group" "development" {
 
 # TODO: Create production deployment group
 
+# Create a deployment group for the Analyservers
+resource "aws_codedeploy_deployment_group" "development_analyservers" {
+  app_name              = "${aws_codedeploy_app.development.name}"
+  deployment_group_name = "Development-Analyservers"
+  service_role_arn      = "${aws_iam_role.code_deploy_role.arn}"
+  autoscaling_groups    = ["${aws_autoscaling_group.analyserver_front_end1.name}"]
+
+  deployment_style {
+    deployment_option = "WITHOUT_TRAFFIC_CONTROL"
+    deployment_type   = "IN_PLACE"
+  }
+}

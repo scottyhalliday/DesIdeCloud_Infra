@@ -80,6 +80,12 @@ variable "webserver_instance" {
 }
 
 # EC2 Instance types
+variable "analyserver_instance" {
+  description = "The instance type for the analysis servers"
+  default     = "t2.micro"
+}
+
+# EC2 Instance types
 variable "bastion_instance" {
   description = "The instance type for the bastion server"
   default     = "t2.micro"

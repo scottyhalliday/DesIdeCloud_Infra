@@ -36,6 +36,28 @@
 #    }
 #  ]
 #}
+#resource "aws_iam_policy" "ec2_codedeploy_policy" {
+#  name        = "DC_ec2_s3_bucket_get"
+#  description = "Allow the ec2 instance to access s3 buckets needed for CodeDeploy"
+#
+#  policy = <<EOF
+#{
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Action": [
+#                "s3:Get*",
+#                "s3:List*"
+#            ],
+#            "Effect": "Allow",
+#            "Resource": "*"
+#        }
+#    ]
+#}
+#EOF
+#}
+
+# TODO: Not just codedeploy needs policies.  Lump it all together with other things
 resource "aws_iam_policy" "ec2_codedeploy_policy" {
   name        = "DC_ec2_s3_bucket_get"
   description = "Allow the ec2 instance to access s3 buckets needed for CodeDeploy"
@@ -46,8 +68,10 @@ resource "aws_iam_policy" "ec2_codedeploy_policy" {
     "Statement": [
         {
             "Action": [
-                "s3:Get*",
-                "s3:List*"
+                "s3:*",
+                "ec2:*",
+                "rds:*",
+                "autoscaling:*"
             ],
             "Effect": "Allow",
             "Resource": "*"
