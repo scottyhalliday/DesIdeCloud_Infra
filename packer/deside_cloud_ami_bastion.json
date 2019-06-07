@@ -34,14 +34,15 @@
   "provisioners": [
     {
       "type"   : "shell",
-      "inline" : ["sudo apt update",
-                  "sudo apt install mysql-server -y",
-                  "sudo apt install python3.7 -y",
-                  "sudo apt install python3-pip -y",
+      "inline" : ["sleep 30",
+                  "sudo apt-get update",
+                  "sudo apt-get install mysql-server -y",
+                  "sudo apt-get install python3.7 -y",
+                  "sudo apt-get install python3-pip -y",
                   "pip3 install awscli",
-                  "sudo apt install awscli -y",
+                  "sudo apt-get install awscli -y",
                   "pip3 install boto3",
-                  "sudo apt install jq -y",
+                  "sudo apt-get install jq -y",
                   "pip3 install mysql-connector-python"
       ]
     }   

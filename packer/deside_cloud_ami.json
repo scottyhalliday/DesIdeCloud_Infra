@@ -30,16 +30,26 @@
     }
 
   }],
-  
+
   "provisioners": [
     {
+      "type"   : "file",
+      "source" : "php_aws.sh",
+      "destination":"/home/ubuntu/php_aws.sh"
+    },
+    {
       "type"   : "shell",
-      "inline" : ["sudo apt update",
-                  "sudo apt install apache2 -y",
-                  "sudo apt install php -y",
-                  "sudo apt install php7.2-mysql -y",
-                  "sudo apt install php7.2-mysqli -y",
-                  "sudo apt install php7.2-xml -y",
+      "inline" : ["sleep 30",
+                  "sudo apt update",
+                  "sudo apt-get install apache2 -y",
+                  "sudo apt-get install php -y",
+                  "sudo apt-get install php7.2-mysql -y",
+                  "sudo apt-get install php7.2-mysqli -y",
+                  "sudo apt-get install php7.2-xml -y",
+                  "sudo apt-get install nodejs -y",
+                  "sudo apt-get install npm -y",
+                  "sudo npm install aws-sdk",
+                  "sudo apt install jq -y",
                   "sudo service apache2 start",
                   "sudo apt-get install ruby -y",
                   "sudo apt-get install wget -y",
@@ -48,11 +58,10 @@
                   "sudo ./install auto",
                   "sudo service codedeploy-agent start",
                   "sudo service codedeploy-agent status",
-                  "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"",
-                  "php -r \"if (hash_file('sha384', 'composer-setup.php') === '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;\"",
-                  "php composer-setup.php",
-                  "php -r \"unlink('composer-setup.php');\""
+                  "sudo chmod 755 ./php_aws.sh",
+                  "sudo ./php_aws.sh"
       ]
-    }   
+    }
+   
   ]
 }

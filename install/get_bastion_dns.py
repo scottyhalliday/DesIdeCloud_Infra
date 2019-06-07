@@ -16,8 +16,10 @@ def get_bastion_dns(bastion_host_name: str) -> str:
         for val in inst['Instances']:
             pub_dns = val['PublicDnsName']
             state   = val['State']['Name']
-            
-            name = None
+
+            if 'Tags' not in val.keys():
+                continue
+
             for tag in val['Tags']:
                 if tag['Key'] == 'Name':
                     name = tag['Value']
