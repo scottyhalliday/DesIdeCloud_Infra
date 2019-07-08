@@ -39,17 +39,19 @@ rds_db_name="DesideCloud"
 # BUILD APPLICATION
 # #############################################################################
 
-echo ""
-echo "BUILD DesIde Cloud AMI's"
-echo ""
-
-#packer build packer/deside_cloud_ami.json
-#packer build packer/deside_cloud_ami_bastion.json
-
-echo ""
-echo "Build the infrastructure"
-echo ""
-
+#echo ""
+#echo "BUILD DesIde Cloud AMI's"
+#echo ""
+#
+#cd packer
+#packer build deside_cloud_ami.json
+#packer build deside_cloud_ami_bastion.json
+#cd ..
+#
+#echo ""
+#echo "Build the infrastructure"
+#echo ""
+#
 #cd terraform
 #terraform apply --var-file=$terraform_var_file
 #
@@ -63,16 +65,21 @@ echo ""
 #    time_cnt=$[$time_cnt+1]
 #done
 #echo "DONE!"
-#
-## Deploy code to webservers
+
+# Deploy code to front end webservers
 #cd ..
-#cd src
-#./deploy_to_aws.sh
+cd src/authserver
+./deploy_to_aws.sh
+
+# Deploy code the the analysis servers (analyserver)
+cd ../..
+cd src/analyserver
+./deploy_to_aws.sh
 
 # Add some content to the database
 
 # Get the public DNS of a bastion server to do this
-#cd ..
+cd ../..
 pub_dns=$(python install/get_bastion_dns.py $bastion_az1_host_name)
 
 # Get the database endpoint

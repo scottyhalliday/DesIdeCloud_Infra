@@ -1,0 +1,148 @@
+/*
+ * Main style sheet for the analyserver experience
+ */
+
+/* Title bar at top of page */
+.titlebar {
+    /*background-color: #0950c1;*/
+    background-color: #000000;
+    margin: 0;
+    overflow: hidden;
+    width: 100%;  
+    color: white;
+    text-decoration: none;
+    padding: 5px 5px;
+    font-family: "Arial";
+    font-size: 20px;
+}
+
+body {font-family: Arial;}
+
+/* Style the tab */
+.tabbar {
+  overflow: hidden;
+  background-color: #4c90ff;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
+}
+
+/* Style the buttons inside the tab */
+.tabbar button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px 5px;
+  transition: 0.3s;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Change background color of buttons on hover */
+.tabbar button:hover {
+  background-color: #b2cfff;
+}
+
+/* Create an active/current tablink class */
+.tabbar button.active {
+  background-color: #ffffff;
+}
+
+/* Style the tab content */
+.tabcontent {
+  /*display: none;*/
+  /*
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  height: 100%;
+  */
+}
+
+/* Case Explorer Styles */
+.case_explorer_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.case_explorer_table_header {
+    background-color: #003284;
+    color: white;
+}
+
+.select_case {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;    
+}
+
+.case_name {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;
+}
+
+.case_desc {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;
+}
+
+.case_created {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;
+}
+
+.case_modified {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;
+}
+
+.case_id {
+    text-align: left;
+    border-bottom: 1px solid #afafaf;
+}
+
+/* Case explorer buttons */
+.ce_img {
+    height: 24px;
+    width: 24px;
+    padding: 5px;
+}
+
+/*                           */
+/* New Form Style Sheets     */
+/*                           */
+.new_case_form {
+    width: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: "Arial";
+}
+
+.new_case_input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.new_case_button {
+  background-color: #4286f4;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Add a hover effect for buttons */
+.new_case_button:hover {
+  opacity: 0.8;
+}

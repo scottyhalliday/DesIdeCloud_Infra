@@ -22,6 +22,13 @@
         die("Connection failed: " . $conn->connect_error);
     }
 
+    // Close the connection to the database.  This is usually done when
+    // a new analyserver webserver is created and user is redirected
+    function close_db_connection() {
+        global $conn;
+        return $conn->close();
+    }
+
     // Make sure that we prevent SQL injection
     function sanitize_string($var) {
         global $conn;
@@ -40,7 +47,7 @@
     }
 
     // Spin up an analyzer instance
-    function new_analyzer() {
+    function new_analyserver() {
         
         global $aws_region;
 
@@ -85,7 +92,7 @@
         return $asg;
     }
 
-    // Poll EC2 instances for newly created Analyserver from ASG
+    // Poll EC2 instances for available Analyserver from ASG
     function poll_EC2_analyserver() {
 
         global $aws_region;
@@ -100,9 +107,6 @@
         $found_instance = false;
         $ec2_instance_dns = "none";
         for ($i=0; $i<20; $i++) {
-
-            // Sleep for 5 seconds
-            sleep(5);
 
             $result = $ec2->describeInstances([
                 'Filters' => [
@@ -123,6 +127,9 @@
                 // Get the instance
                 $ec2_instance = $result['Reservations'][$j]['Instances'][$j];
 
+                // Get the instance id
+                $ec2_instance_id = $ec2_instance['InstanceId'];
+
                 // Get the tags
                 $ec2_tags = $ec2_instance['Tags'];
 
@@ -139,12 +146,32 @@
 
                 if ($instance_owned == false) {
                     $ec2_instance_dns = $ec2_instance['PublicDnsName'];
-                    return $ec2_instance_dns;
+                    //return $ec2_instance_dns;
+                    break;
                 }
 
             }
 
+            if ($instance_owned !== "none") {
+                break;
+            }
+
+            // Sleep for 5 seconds
+            sleep(5);
+
         }
+
+        // If dns for analyserver is found then set the owner to this user so it
+        // is not reassigned to another user
+        $ec2->createTags([
+            'Resources' => [$ec2_instance_id],
+            'Tags' => [
+                [
+                    'Key'   => 'analyserver-owner',
+                    'Value' => $_SESSION['user']
+                ]
+            ]
+        ]);
 
         return $ec2_instance_dns;
     }

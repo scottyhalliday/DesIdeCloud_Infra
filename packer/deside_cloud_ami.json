@@ -46,6 +46,7 @@
                   "sudo apt-get install php7.2-mysql -y",
                   "sudo apt-get install php7.2-mysqli -y",
                   "sudo apt-get install php7.2-xml -y",
+                  "sudo apt-get install php7.2-curl -y",
                   "sudo apt-get install nodejs -y",
                   "sudo apt-get install npm -y",
                   "sudo npm install aws-sdk",

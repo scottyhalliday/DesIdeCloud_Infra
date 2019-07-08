@@ -35,7 +35,8 @@ fi
 S3_FULLPATH="s3://$S3_BUCKET/$S3_KEY"
 
 # Push the latest code changes into the s3 bucket and register the revision
-resp=$(aws deploy push --application-name $CODE_DEPLOY_APP_NAME --ignore-hidden-files --s3-location $S3_FULLPATH --source `pwd`)
+#resp=$(aws deploy push --application-name $CODE_DEPLOY_APP_NAME --ignore-hidden-files --s3-location $S3_FULLPATH --source `pwd`)
+resp=$(aws deploy push --application-name $CODE_DEPLOY_APP_NAME --s3-location $S3_FULLPATH --source `pwd`)
 
 # Get the metadata for the object pushed so we can create a deployment
 obj_meta=$(aws s3api head-object --bucket $S3_BUCKET --key $S3_KEY --output json)

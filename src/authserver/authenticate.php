@@ -30,20 +30,30 @@
 
         // Manually increment the desired count for the auto scaling group.
         // This will trigger a new EC2 instance to be created
-        $asg=new_analyzer();
+        $asg=new_analyserver();
+
     }
 
 ?>
 
 <?php
+
     $analysis_dns=poll_EC2_analyserver();
     sleep(10);
+    
 ?>
 
 <script>
     var analysis_dns = "http://" + "<?php echo $analysis_dns ?>";
     window.location.href = analysis_dns;
 </script>
+
+<?php
+
+    // Now that the user has been redirected to their own Analyserver close the database connection
+    require_once "functions.php";
+    close_db_connection();
+?>
 
 </body>
 </html>

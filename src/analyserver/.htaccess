@@ -1,0 +1,8 @@
+# Allow access to subfolder that would be denied by default
+RewriteEngine On
+RewriteBase / 
+RewriteRule ^images/.*$ – [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ./index.php [L]

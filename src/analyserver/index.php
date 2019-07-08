@@ -1,6 +1,10 @@
 <?php
-    echo "<h1>You are now on the Analyserver</h1>";
+    session_start();
 
-    echo "<br>Do I still have _SESSION's?  I doubt it<br>";
-    echo $_SESSION['user'];
+    require_once "functions.php";
+    require_once "main.php";
+
 ?>
+</body>
+</html>
+

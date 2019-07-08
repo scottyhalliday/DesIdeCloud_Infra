@@ -1,0 +1,5 @@
+#!bin/sh
+
+# Since the webpage will create the json input file itself, we simply just need
+# to call the Python program
+python circle_area.py $1

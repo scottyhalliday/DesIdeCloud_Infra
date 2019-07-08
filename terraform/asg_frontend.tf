@@ -30,6 +30,8 @@ resource "aws_autoscaling_group" "webserver_front_end1" {
     value               = "Decide-Cloud-az1-asg-webserver"
     propagate_at_launch = true
   }
+
+  depends_on = ["aws_subnet.az1_public"]
 }
 
 #resource "aws_autoscaling_lifecycle_hook" "asg_codedeploy_hook" {

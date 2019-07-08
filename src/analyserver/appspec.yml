@@ -2,8 +2,30 @@ version: 0.0
 os: linux
 
 files:
+  - source: .htaccess
+    destination: /var/www/html
   - source: index.php
     destination: /var/www/html
+  - source: case_explorer.php
+    destination: /var/www/html
+  - source: new_case.php
+    destination: /var/www/html
+  - source: functions.php
+    destination: /var/www/html
+  - source: main.php
+    destination: /var/www/html
+  - source: main.css
+    destination: /var/www/html
+  - source: modal.css
+    destination: /var/www/html
+  - source: images/delete.png
+    destination: /var/www/html/images
+  - source: images/new_case.png
+    destination: /var/www/html/images
+  - source: images/open_case.png
+    destination: /var/www/html/images
+  - source: images/refresh.svg
+    destination: /var/www/html/images
 
 permissions:
   - object: /var/www/html
@@ -15,3 +37,5 @@ permissions:
 hooks:
   BeforeInstall: 
     - location: scripts/cleanup.sh
+  AfterInstall:
+    - location: scripts/afterinstall.sh
