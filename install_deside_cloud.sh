@@ -48,26 +48,26 @@ rds_db_name="DesideCloud"
 #packer build deside_cloud_ami_bastion.json
 #cd ..
 #
-#echo ""
-#echo "Build the infrastructure"
-#echo ""
-#
-#cd terraform
-#terraform apply --var-file=$terraform_var_file
-#
-## Sleep for 60 seconds to ensure services are online and initialized
-#echo -n "Sleeping for 60 seconds to give AWS resources time to fully initialize "
-#time_cnt="0"
-#while [ $time_cnt -lt 60 ]
-#do
-#    echo -n "."
-#    sleep 1
-#    time_cnt=$[$time_cnt+1]
-#done
-#echo "DONE!"
+echo ""
+echo "Build the infrastructure"
+echo ""
+
+cd terraform
+terraform apply --var-file=$terraform_var_file
+
+# Sleep for 60 seconds to ensure services are online and initialized
+echo -n "Sleeping for 60 seconds to give AWS resources time to fully initialize "
+time_cnt="0"
+while [ $time_cnt -lt 60 ]
+do
+    echo -n "."
+    sleep 1
+    time_cnt=$[$time_cnt+1]
+done
+echo "DONE!"
 
 # Deploy code to front end webservers
-#cd ..
+cd ..
 cd src/authserver
 ./deploy_to_aws.sh
 

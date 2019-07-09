@@ -39,6 +39,7 @@
     <?php
         require_once "case_explorer.php";
         require_once "new_case.php";
+        build_case_explorer_table();
     ?>
     </table>
 
@@ -72,26 +73,6 @@
 
     // Calls new_case.php to create new case for entered case name and description
     function create_new_case() {
-      /*var xhttp = new XMLHttpRequest();
-          
-      // Assemble a json file to send to server
-      var json = {}
-      json.new_case_name = document.getElementById("new_case_name").value;
-      json.new_case_desc = document.getElementById("new_case_desc").value;
-
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          return;
-        }
-      };
-
-      xhttp.open("POST", "new_case.php");
-      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("q=" + JSON.stringify(json));
-
-      // Reload the case explorer table
-      load_case_explorer_table();
-      */
       
       // Assemble a json file to send to server
       var json = {}
@@ -108,37 +89,15 @@
         },
         success: function(response) {
           alert("Success");
-          load_case_explorer_table();
+          //load_case_explorer_table();
         }
       });
 
     }
 
-    function create_new_case_sql(jsonStr) {
-
-      $.ajax({
-        type: "POST", 
-        url: "./new_case.php",
-        data: JSON.stringify(json),
-        error: function(response) {
-          alert("ERROR:: " + response);
-        }
-
-      });
-    }
-
+    // Reload the case explorer table by simply calling for a refresh of this page
     function load_case_explorer_table() {
-//      $.ajax({
-//        url: "case_explorer.php",
-//        success: function(data) {
-//          alert(data);
-//          $(".case_explorer_table").html(data);
-//        }
-//      });
-      $.get("case_explorer.php", function(data) {
-        alert(data);
-        $(".case_explorer_table").html(data);
-      });
+      document.location.reload();      
     }
 
     function create_new_case_form(event) {
