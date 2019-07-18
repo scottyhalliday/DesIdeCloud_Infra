@@ -32,7 +32,7 @@
 
     <input type='image' class='ce_img' id='ce_new'     src='images/new_case.png'  title='Create a new case' onclick='create_new_case_form(event)'/>
     <input type='image' class='ce_img' id='ce_open'    src='images/open_case.png' title='Open selected cases'/>
-    <input type='image' class='ce_img' id='ce_delete'  src='images/delete.png'    title='Delete selected cases'/>    
+    <input type='image' class='ce_img' id='ce_delete'  src='images/delete.png'    title='Delete selected cases' onclick='delete_selected_cases()'/>    
     <input type='image' class='ce_img' id='ce_refresh' src='images/refresh.svg'   title='Refresh the table', onclick='load_case_explorer_table()'/>    
 
     <table class='case_explorer_table'>
@@ -44,9 +44,10 @@
     </table>
 
     <script>
-        // Make sure the tab is set to active
-        var btn_obj = document.getElementById("case_explorer_tab");
-        btn_obj.className = "active";
+      // Make sure the tab is set to active
+      var btn_obj = document.getElementById("case_explorer_tab");
+      btn_obj.className = "active";
+
     </script>
 </div>
 
@@ -79,19 +80,69 @@
       json.new_case_name = document.getElementById("new_case_name").value;
       json.new_case_desc = document.getElementById("new_case_desc").value;
 
-      $.ajax({
-        type: "POST", 
-        url: "./new_case.php",
-        data: JSON.stringify(json),
-        error: function(response) {
-          var_dump(response);
-          alert("ERROR:: " + response);
-        },
-        success: function(response) {
-          alert("Success");
-          //load_case_explorer_table();
+//      $.ajax({
+//        type: "post", 
+//        url: "./new_case.php",
+//        contentType: "application/json; charset=utf-8",
+//        dataType: "html",
+//        data: JSON.stringify(json),
+//        error: function(response) {
+//          console.log(response);
+//          alert("ERROR:: " + response);
+//        },
+//        complete: function(response) {
+//          alert("Success");
+//          console.log(response);
+//          //load_case_explorer_table();
+//        }
+//      });
+
+      var cname   = document.getElementById("new_case_name").value;
+      var cdesc   = document.getElementById("new_case_desc").value;
+      var params  = "new_case_name=" + cname + "&new_case_desc=" + cdesc;
+      var request = new XMLHttpRequest();
+
+      request.open("POST", "new_case.php", true);
+      request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      request.setRequestHeader("Content-length", params.length);
+      request.setRequestHeader("Connection", "close");
+
+      // Callback function
+      request.onreadystatechange = function()
+      {
+        //alert("STATUS CODE :: " + this.status + " READY STATE :: " + this.readyState);
+        if (this.readyState == 4 && this.status == 200) {
+          //alert("STATUS CODE :: " + this.status);
+          //var json = JSON.parse(this.responseText);
+
+          //console.log('Response text is ' + this.responseText);
+
+          //if (!json || json.status !== true) {
+          //  alert("ERROR: Could not add new case.  Contact Administrator");
+          //}
+          if (this.response == false) {
+            alert("ERROR: Could not add new case.  Contact Administrator");
+          }
+          reload_this_page();
+        }        
+      }
+
+      request.send(params);
+
+    }
+
+    // All a post/redirect/get pattern to prevent re-sending of data on refresh of window
+    function reload_this_page() {
+
+      var request = new XMLHttpRequest();
+      request.open("GET", "reload.php?reload=main.php", true);
+      request.onreadystatechange = function()
+      {
+        if (this.readyState == 4 && this.status == 200) {
+            location.reload();
         }
-      });
+      }
+      request.send();
 
     }
 
@@ -111,6 +162,67 @@
     function close_new_case_input_form() {
         var modal = document.getElementById("modal");
         modal.style.display = "none";
+    }
+
+    // For each selected case, delete it
+    function delete_selected_cases() {
+
+      // Get the selected case ID's
+      var i;
+      var j;
+      var table = document.getElementsByClassName('case_explorer_table');
+      var tr;
+      var td;
+      var caseids = "";
+
+      for (i=0; i<table[0].rows.length; i++) {
+        
+        // Get the cell items
+        td = table[0].rows[i].getElementsByTagName('td');
+        
+        // If tag is not a 'td' tag then move on
+        if (td.length == 0) {
+          continue;
+        }
+
+        // Is this row checked?
+        if (td[0].firstChild.checked == true) {
+          caseids = caseids + td[td.length-1].innerHTML + ",";
+        }
+
+      }
+
+      // If items were selected then continue to delete them
+      if (caseids.length == 0) {
+        return;
+      }
+      console.log("Case IDS :::: " . caseids);
+
+      // Make sure the user is sure
+      var txt;
+      var rep = confirm("Are you sure you want to delete these cases?");
+      if (rep == false) {
+        alert("Delete Canceled!");
+        return;
+      }
+      console.log("Case IDS :::: " . caseids);
+      $.ajax({
+        type: "post", 
+        url: "./delete_cases.php",
+        //data: {action: 'delete_cases', value: caseids},
+        data: {action: caseids},
+        error: function(response) {
+          console.log(response);
+          alert("ERROR:: " + response);
+        },
+        success: function(response) {
+          console.log("Success!");
+          console.log(response);
+        }
+      });
+
+      window.location = window.location.href;
+
     }
 
 </script>

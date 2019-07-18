@@ -10,9 +10,13 @@ files:
     destination: /var/www/html
   - source: new_case.php
     destination: /var/www/html
+  - source: delete_cases.php
+    destination: /var/www/html
   - source: functions.php
     destination: /var/www/html
   - source: main.php
+    destination: /var/www/html
+  - source: reload.php
     destination: /var/www/html
   - source: main.css
     destination: /var/www/html

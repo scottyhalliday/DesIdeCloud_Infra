@@ -6,6 +6,8 @@
     if (isset($_POST['action']) && !empty($_POST['action'])) {
         if ($_POST['action'] == 'refresh_case_explorer') {
             build_case_explorer_table();
+        }else if ($_POST['action'] == 'delete_cases') {
+            delete_cases($_POST['value']);
         }
     }
 
@@ -41,5 +43,26 @@
             }
         }
     }
+
+    function delete_cases($values) {
+
+        // Case ID's were passed as a string of case id's seperated by commas
+        $case_ids = explode(",", $values);
+
+        for ($i=0; $i < count($case_ids)-1; $i++) {
+            $query = "DELETE FROM cases WHERE owner='". $_SESSION['user'] . "' AND case_id='" . $case_ids[$i] . "'";
+            error_log("Delete Query Is :: " . $query);
+            $result = query_msql($query);
+        }
+
+        // Debugging
+        //error_log("DELETE CASE :: QUERY RESULTS :: " . $result);
+
+        // Redirect back to the case explorer to avoid double posts (POST/REDIRECT/GET)
+        error_log("I am about to redirect");
+        header('Location: main.php');
+        error_log("I redirected");
+    }
+    
 ?>
 

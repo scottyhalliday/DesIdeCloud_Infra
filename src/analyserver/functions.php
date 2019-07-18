@@ -55,7 +55,7 @@
     function query_msql($query) {
         global $conn;
         $result = $conn->query($query);
-        if (!$result) die($conn->error);
+        //if (!$result) die($conn->error);
         return $result;
     }
 
