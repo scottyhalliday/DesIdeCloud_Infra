@@ -1,24 +1,31 @@
 <?php
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+
     require_once "functions.php";
 
     // Check if the case explorer was requested to refresh the table
     if (isset($_POST['action']) && !empty($_POST['action'])) {
         if ($_POST['action'] == 'refresh_case_explorer') {
+            error_log("Request was to refresh case explorer");
             build_case_explorer_table();
         }else if ($_POST['action'] == 'delete_cases') {
-            delete_cases($_POST['value']);
+            error_log("Request was to delete cases");
+            delete_cases($_POST['caseids']);
         }
     }
 
     function build_case_explorer_table() {
+
+        error_log("case_explorer.php -- build_case_explorer_table()");
 
         // Get the users cases from database
         $query = "SELECT * FROM cases WHERE owner='". $_SESSION['user'] . "';";
         $result = query_msql($query);
     
         // Debugging
-        //error_log("CASE_EXPLORER.PHP ::: QUERY ::: " . $query);
+        error_log("CASE_EXPLORER.PHP ::: QUERY ::: " . $query);
         
         // Write the header row
         echo "<tr class='case_explorer_table_header'>";
@@ -34,17 +41,19 @@
             while ($row = mysqli_fetch_array($result)) {
                 echo "<tr>";
                 echo "  <td class='select_case'  ><input type='checkbox' name='caseselect" . $row['case_id'] . "' value='caseid" . $row['case_id'] ."'></td>";
-                echo "  <td class='case_name'    >" . $row['name']         . "</td>";
-                echo "  <td class='case_desc'    >" . $row['description']  . "</td>";
-                echo "  <td class='case_created' >" . $row['datecreated']  . "</td>";
-                echo "  <td class='case_modified'>" . $row['datemodfied']  . "</td>";
-                echo "  <td class='case_id'      >" . $row['case_id']      . "</td>";
+                echo "  <td class='case_name'     >" . $row['name']         . "</td>";
+                echo "  <td class='case_desc'     >" . $row['description']  . "</td>";
+                echo "  <td class='case_created'  >" . $row['datecreated']  . "</td>";
+                echo "  <td class='case_modified' >" . $row['datemodfied']  . "</td>";
+                echo "  <td class='case_id'       >" . $row['case_id']      . "</td>";
                 echo "</tr>";
             }
         }
     }
 
     function delete_cases($values) {
+
+        error_log("case_explorer.php -- delete_cases()");
 
         // Case ID's were passed as a string of case id's seperated by commas
         $case_ids = explode(",", $values);
@@ -56,12 +65,14 @@
         }
 
         // Debugging
-        //error_log("DELETE CASE :: QUERY RESULTS :: " . $result);
+        error_log("DELETE CASE :: QUERY RESULTS :: " . $result);
 
-        // Redirect back to the case explorer to avoid double posts (POST/REDIRECT/GET)
-        error_log("I am about to redirect");
-        header('Location: main.php');
-        error_log("I redirected");
+        if ($result == 1) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
     
 ?>

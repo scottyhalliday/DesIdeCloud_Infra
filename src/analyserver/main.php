@@ -8,10 +8,13 @@
 
 <!-- Create the top header bar showing user and give user logout ability -->
 <?php
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
 
     require_once "functions.php";
     get_user();
+    get_s3_info();
 
     // Build the header bar above menu
     echo "<table class=titlebar>";
@@ -33,12 +36,12 @@
     <input type='image' class='ce_img' id='ce_new'     src='images/new_case.png'  title='Create a new case' onclick='create_new_case_form(event)'/>
     <input type='image' class='ce_img' id='ce_open'    src='images/open_case.png' title='Open selected cases'/>
     <input type='image' class='ce_img' id='ce_delete'  src='images/delete.png'    title='Delete selected cases' onclick='delete_selected_cases()'/>    
-    <input type='image' class='ce_img' id='ce_refresh' src='images/refresh.svg'   title='Refresh the table', onclick='load_case_explorer_table()'/>    
+    <input type='image' class='ce_img' id='ce_refresh' src='images/refresh.svg'   title='Refresh the table', onclick='reload_this_page()'/>    
 
     <table class='case_explorer_table'>
     <?php
         require_once "case_explorer.php";
-        require_once "new_case.php";
+        //require_once "new_case.php";
         build_case_explorer_table();
     ?>
     </table>
@@ -72,30 +75,34 @@
 <!-- Javascript Functions -->
 <script>
 
+    // Check or uncheck all checkboxes if top most checkbox is clicked
+    $('input[name=caseselectall]').click( function(){
+      var i;
+      var table = document.getElementsByClassName('case_explorer_table');
+      var tr;
+      var td;
+
+      for (i=0; i<table[0].rows.length; i++) {
+        // Get the cell items
+        td = table[0].rows[i].getElementsByTagName('td');
+      
+        // If tag is not a 'td' tag then move on
+        if (td.length == 0) {
+          continue;
+        }
+
+        // Toggle the checkbox
+        td[0].firstChild.checked = $(this).prop("checked");
+
+      }
+
+    });
+
     // Calls new_case.php to create new case for entered case name and description
     function create_new_case() {
       
-      // Assemble a json file to send to server
-      var json = {}
-      json.new_case_name = document.getElementById("new_case_name").value;
-      json.new_case_desc = document.getElementById("new_case_desc").value;
-
-//      $.ajax({
-//        type: "post", 
-//        url: "./new_case.php",
-//        contentType: "application/json; charset=utf-8",
-//        dataType: "html",
-//        data: JSON.stringify(json),
-//        error: function(response) {
-//          console.log(response);
-//          alert("ERROR:: " + response);
-//        },
-//        complete: function(response) {
-//          alert("Success");
-//          console.log(response);
-//          //load_case_explorer_table();
-//        }
-//      });
+      // Debugging
+      console.log("main.php -- create_new_case()");
 
       var cname   = document.getElementById("new_case_name").value;
       var cdesc   = document.getElementById("new_case_desc").value;
@@ -110,17 +117,10 @@
       // Callback function
       request.onreadystatechange = function()
       {
-        //alert("STATUS CODE :: " + this.status + " READY STATE :: " + this.readyState);
         if (this.readyState == 4 && this.status == 200) {
-          //alert("STATUS CODE :: " + this.status);
-          //var json = JSON.parse(this.responseText);
 
-          //console.log('Response text is ' + this.responseText);
-
-          //if (!json || json.status !== true) {
-          //  alert("ERROR: Could not add new case.  Contact Administrator");
-          //}
-          if (this.response == false) {
+          // If the case was not created then issue an alert
+          if (this.response === false) {
             alert("ERROR: Could not add new case.  Contact Administrator");
           }
           reload_this_page();
@@ -131,8 +131,10 @@
 
     }
 
-    // All a post/redirect/get pattern to prevent re-sending of data on refresh of window
+    // Allow a post/redirect/get pattern to prevent re-sending of data on refresh of window
     function reload_this_page() {
+
+      console.log("main.php -- reload_this_page()");
 
       var request = new XMLHttpRequest();
       request.open("GET", "reload.php?reload=main.php", true);
@@ -146,11 +148,7 @@
 
     }
 
-    // Reload the case explorer table by simply calling for a refresh of this page
-    function load_case_explorer_table() {
-      document.location.reload();      
-    }
-
+    // Create modal form for entering new case information
     function create_new_case_form(event) {
 
         // Modal new case window handling
@@ -159,6 +157,7 @@
 
     }
 
+    // Close the modal form
     function close_new_case_input_form() {
         var modal = document.getElementById("modal");
         modal.style.display = "none";
@@ -175,11 +174,12 @@
       var td;
       var caseids = "";
 
+      console.log("main.php -- delete_selected_cases()");
+
       for (i=0; i<table[0].rows.length; i++) {
-        
         // Get the cell items
         td = table[0].rows[i].getElementsByTagName('td');
-        
+      
         // If tag is not a 'td' tag then move on
         if (td.length == 0) {
           continue;
@@ -196,7 +196,6 @@
       if (caseids.length == 0) {
         return;
       }
-      console.log("Case IDS :::: " . caseids);
 
       // Make sure the user is sure
       var txt;
@@ -205,23 +204,37 @@
         alert("Delete Canceled!");
         return;
       }
-      console.log("Case IDS :::: " . caseids);
-      $.ajax({
-        type: "post", 
-        url: "./delete_cases.php",
-        //data: {action: 'delete_cases', value: caseids},
-        data: {action: caseids},
-        error: function(response) {
-          console.log(response);
-          alert("ERROR:: " + response);
-        },
-        success: function(response) {
-          console.log("Success!");
-          console.log(response);
-        }
-      });
 
-      window.location = window.location.href;
+      // Create the AJAX request
+      var params  = "action=delete_cases&caseids=" + caseids;
+      var request = new XMLHttpRequest();
+
+      request.open("POST", "case_explorer.php", true);
+      request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      request.setRequestHeader("Content-length", params.length);
+      request.setRequestHeader("Connection", "close");
+
+      // Callback function
+      request.onreadystatechange = function()
+      {
+
+        if (this.readyState == 4 && this.status == 200) {
+
+          // If server was unable to delete case(s) tell the user
+          if (this.response === false) {
+            alert("ERROR: Could not delete case(s).  Contact Administrator");
+          }
+
+          // Reload the page to reflect changes 
+          reload_this_page();
+        }        
+      }
+
+      request.send(params);
+
+
+
+
 
     }
 

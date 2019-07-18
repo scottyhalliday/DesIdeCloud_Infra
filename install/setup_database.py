@@ -25,7 +25,9 @@ def setup_database(user: str, password: str, host: str, database: str):
         CREATE TABLE users (
             userid   int          AUTO_INCREMENT PRIMARY KEY,
             username varchar(255) NOT NULL,
-            password varchar(255) NOT NULL
+            password varchar(255) NOT NULL,
+            s3bucket varchar(255) NOT NULL,
+            s3key    varchar(255) NOT NULL
         );
     """
    
@@ -35,12 +37,12 @@ def setup_database(user: str, password: str, host: str, database: str):
    
     # Add some users
     user = """
-        INSERT INTO users (username, password)
+        INSERT INTO users (username, password, s3bucket, s3key)
         VALUES (%s, %s);
     """
    
-    user1 = ("analyst1", "mypassword")
-    user2 = ("analyst2", "somepassword")
+    user1 = ("analyst1", "mypassword"  , "deside-cloud", "cases")
+    user2 = ("analyst2", "somepassword", "deside-cloud", "cases")
    
     print(f'\nAdding User1')
     cursor.execute(user, user1)

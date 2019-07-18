@@ -99,6 +99,26 @@
                 break;
             }
         }
+    }
 
+    // Get the user's S3 bucket and key information
+    function get_s3_info() {
+        $query_str1  = "SELECT s3bucket FROM users where username='" . $_SESSION['user'] . "';";
+        $query_str2  = "SELECT s3key    FROM users where username='" . $_SESSION['user'] . "';";
+
+        $s3bucket = query_msql($query_str1);
+        $s3key    = query_msql($query_str2);
+
+        if ($s3bucket->num_rows > 0) {
+            $row = mysqli_fetch_array($s3bucket);
+            $_SESSION['s3bucket'] = $row['s3bucket'];
+            error_log("Using AWS S3 Bucket for case saving ::: " . $_SESSION['s3bucket']);
+        }
+
+        if ($s3key->num_rows > 0) {
+            $row = mysqli_fetch_array($s3key);
+            $_SESSION['s3key'] = $row['s3key'];
+            error_log("Using AWS S3 Key for case saving ::: " . $_SESSION['s3key']);
+        }
     }
 ?>
