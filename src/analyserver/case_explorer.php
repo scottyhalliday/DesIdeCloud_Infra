@@ -12,7 +12,7 @@
             build_case_explorer_table();
         }else if ($_POST['action'] == 'delete_cases') {
             error_log("Request was to delete cases");
-            delete_cases($_POST['caseids']);
+            delete_cases($_POST['caseids'], $_POST['casenames']);
         }
     }
 
@@ -51,17 +51,23 @@
         }
     }
 
-    function delete_cases($values) {
+    function delete_cases($caseids, $casenames) {
 
         error_log("case_explorer.php -- delete_cases()");
 
         // Case ID's were passed as a string of case id's seperated by commas
-        $case_ids = explode(",", $values);
+        $case_ids   = explode(",", $caseids);
+        $case_names = explode(",", $casenames);
 
         for ($i=0; $i < count($case_ids)-1; $i++) {
             $query = "DELETE FROM cases WHERE owner='". $_SESSION['user'] . "' AND case_id='" . $case_ids[$i] . "'";
             error_log("Delete Query Is :: " . $query);
             $result = query_msql($query);
+
+            // Remove case from S3 bucket
+            $case_key = $_SESSION['s3key'] . "/" . $_SESSION['user'] . "/" . $case_names[$i];
+
+            delete_s3_object($_SESSION['s3bucket'], $case_key);
         }
 
         // Debugging

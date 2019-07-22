@@ -60,6 +60,8 @@
                   "sudo service codedeploy-agent start",
                   "sudo service codedeploy-agent status",
                   "sudo chmod 755 ./php_aws.sh",
+                  "sudo mkdir /var/www/data",
+                  "sudo chmod 777 /var/www/data",
                   "sudo ./php_aws.sh"
       ]
     }

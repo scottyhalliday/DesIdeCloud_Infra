@@ -7,8 +7,6 @@ from mysql.connector import connection
 def setup_database(user: str, password: str, host: str, database: str):
     
     try:
-        #cnx = connection.MySQLConnection(user="deside_admin", password="reset_this_password",
-        #            host="deside-cloud-mysql-db.cubk8axrpfzg.us-east-1.rds.amazonaws.com", database="DesideCloud")
         cnx = connection.MySQLConnection(user=user, password=password, host=host, database=database)
     except:
         print("Could not connect :(")
@@ -38,7 +36,7 @@ def setup_database(user: str, password: str, host: str, database: str):
     # Add some users
     user = """
         INSERT INTO users (username, password, s3bucket, s3key)
-        VALUES (%s, %s);
+        VALUES (%s, %s, %s, %s);
     """
    
     user1 = ("analyst1", "mypassword"  , "deside-cloud", "cases")
@@ -117,15 +115,16 @@ def setup_database(user: str, password: str, host: str, database: str):
     
     cursor.execute(method_table)
     
-    # Add some methods
+    # Add some methods -- NOTE:  This demo does not implement the methods in the web application.  This
+    # code below is just to demo setting up a methods table
     method = """
         INSERT INTO methods (name, description, s3bucket, s3key, owner)
         VALUES (%s, %s, %s, %s, %s);
     """
 
-    method1 = ("Circular Field Area"   , "Calculate the area of a circular field"   , "deside-cloud", "methods", "analyst1")
-    method2 = ("Rectangular Field Area", "Calculate the area of a rectangular field", "deside-cloud", "methods", "analyst2")
-    method3 = ("Triangular Field Area" , "Calculate the area of a triangular field" , "deside-cloud", "methods", "analyst2")
+    method1 = ("Circle Geometry"   , "Calculate the geometry of a circle"   , "deside-cloud", "methods", "analyst1")
+    method2 = ("Rectangle Geometry", "Calculate the geometry of a rectangle", "deside-cloud", "methods", "analyst2")
+    method3 = ("Triangle Geometry" , "Calculate the geometry of a triangle" , "deside-cloud", "methods", "analyst2")
 
     print(f'\nCreating sample method1')
     cursor.execute(method, method1)

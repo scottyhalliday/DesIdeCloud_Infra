@@ -16,6 +16,19 @@
     font-size: 20px;
 }
 
+.titlebar button {
+  background-color: inherit;
+  float: right;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: white;
+  padding: 5px 5px;
+  transition: 0.3s;
+  font-size: 20px;
+  font-weight: bold;
+}
+
 body {font-family: Arial;}
 
 /* Style the tab */
@@ -41,9 +54,10 @@ body {font-family: Arial;}
 }
 
 /* Change background color of buttons on hover */
-.tabbar button:hover {
+/*.tabbar button:hover {
   background-color: #b2cfff;
 }
+*/
 
 /* Create an active/current tablink class */
 .tabbar button.active {

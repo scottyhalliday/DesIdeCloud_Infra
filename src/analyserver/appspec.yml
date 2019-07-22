@@ -14,6 +14,8 @@ files:
     destination: /var/www/html
   - source: functions.php
     destination: /var/www/html
+  - source: logout.php
+    destination: /var/www/html
   - source: main.php
     destination: /var/www/html
   - source: reload.php
@@ -29,6 +31,8 @@ files:
   - source: images/open_case.png
     destination: /var/www/html/images
   - source: images/refresh.svg
+    destination: /var/www/html/images
+  - source: images/deside_cloud_sample.png
     destination: /var/www/html/images
 
 permissions:

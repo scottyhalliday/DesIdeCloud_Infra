@@ -37,11 +37,27 @@
         // Debugging
         error_log("NEW CASE CREATION :: QUERY RESULTS :: " . $result);
 
-        if ($result == 1) {
-            return true;
-        } else {
+        // If the SQL query failed then return, nothing more to do here
+        if ($result == 0) {
             return false;
         }
 
+        // Create the case file in the S3 bucket
+        $temp_file = tempnam("/var/www/data", "deside_cloud");
+
+        error_log("new_case.php -- Creating temporary file for new case -- " . $temp_file);
+
+        $new_file = fopen($temp_file, "w");
+        fwrite($new_file, "{'methods': {}}:\n");
+        fclose($new_file);
+
+        // Copy the file to s3 
+        error_log("new_case.php -- Copying new case to S3");
+
+        $case_key = $_SESSION['s3key'] . "/" . $_SESSION['user'] . "/" . $name;
+        cp_to_s3($_SESSION['s3bucket'], $case_key, $temp_file);
+
+        return true;
+        
     }
 ?>

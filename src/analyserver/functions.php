@@ -5,6 +5,7 @@
     use Aws\AutoScaling\AutoScalingClient;
     use Aws\Ec2\Ec2Client;
     use Aws\Rds\RdsClient;
+    use Aws\S3\S3Client;
 
     // AWS Region
     $aws_region = "us-east-1";
@@ -121,4 +122,81 @@
             error_log("Using AWS S3 Key for case saving ::: " . $_SESSION['s3key']);
         }
     }
+
+    // Copy file from temporary directory to s3 bucket
+    function cp_to_s3($s3bucket, $s3key, $sourcefile) {
+        // s3bucket   : The S3 bucket the file will be placed
+        // s3key      : The unique key for the file name to be placed in bucket
+        // sourcefile : The location of the local file to copy
+        
+        global $aws_region;
+
+        error_log('functions.php -- cp_tmp_to_s3()');
+
+        try {
+            $s3 = new S3Client([
+                'region' => $aws_region,
+                'version' => 'latest'
+            ]);
+
+            $result = $s3->putObject([
+                'Bucket' => $s3bucket,
+                'Key'    => $s3key,
+                'SourceFile' => $sourcefile,
+            ]);
+
+        } catch (S3Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
+
+    // Copy file from temporary directory to s3 bucket
+    function delete_s3_object($s3bucket, $s3key) {
+        // s3bucket   : The S3 bucket the object exists
+        // s3key      : The unique key for the file name to be deleted
+        
+        global $aws_region;
+
+        error_log('functions.php -- cp_tmp_to_s3()');
+
+        try {
+            $s3 = new S3Client([
+                'region' => $aws_region,
+                'version' => 'latest'
+            ]);
+
+            $result = $s3->deleteObject([
+                'Bucket' => $s3bucket,
+                'Key'    => $s3key,
+            ]);
+
+        } catch (S3Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
+
+    // Download case file content from S3 bucket
+    function read_s3_case_object($s3bucket, $s3key) {
+        global $aws_region;
+
+        error_log('functions.php -- cp_tmp_to_s3()');
+
+        try {
+            $s3 = new S3Client([
+                'region' => $aws_region,
+                'version' => 'latest'
+            ]);
+
+            $result = $s3->getObject([
+                'Bucket' => $s3bucket,
+                'Key'    => $s3key,
+            ]);
+
+            return $result['Body'];
+
+        } catch (S3Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
+
 ?>
