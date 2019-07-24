@@ -39,7 +39,7 @@
 <?php
 
     $analysis_dns=poll_EC2_analyserver();
-    sleep(10);
+    //sleep(10);
     
 ?>
 

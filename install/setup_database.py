@@ -115,28 +115,6 @@ def setup_database(user: str, password: str, host: str, database: str):
     
     cursor.execute(method_table)
     
-    # Add some methods -- NOTE:  This demo does not implement the methods in the web application.  This
-    # code below is just to demo setting up a methods table
-    method = """
-        INSERT INTO methods (name, description, s3bucket, s3key, owner)
-        VALUES (%s, %s, %s, %s, %s);
-    """
-
-    method1 = ("Circle Geometry"   , "Calculate the geometry of a circle"   , "deside-cloud", "methods", "analyst1")
-    method2 = ("Rectangle Geometry", "Calculate the geometry of a rectangle", "deside-cloud", "methods", "analyst2")
-    method3 = ("Triangle Geometry" , "Calculate the geometry of a triangle" , "deside-cloud", "methods", "analyst2")
-
-    print(f'\nCreating sample method1')
-    cursor.execute(method, method1)
-
-    print(f'\nCreating sample method2')
-    cursor.execute(method, method2)
-
-    print(f'\nCreating sample method3')
-    cursor.execute(method, method3)
-
-    cnx.commit()
-
     print("Done!")
     
     # Cleanup 

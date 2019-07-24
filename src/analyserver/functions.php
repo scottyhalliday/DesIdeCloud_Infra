@@ -94,9 +94,41 @@
         ]);
 
         // Username is stored in the tags with key -- 'analyserver-owner'
-        for ($i=0; $i<count($result); $i++) {
+        for ($i=0; $i<count($result['Tags']); $i++) {
             if ($result['Tags'][$i]['Key'] == 'analyserver-owner') {
                 $_SESSION['user'] = $result['Tags'][$i]['Value'];
+                break;
+            }
+        }
+    }
+
+    // Get the login page redirect address
+    function get_login_redirect() {
+        global $aws_region;
+
+        // Get the instance id for this by using instance metadata
+        $instance_id = file_get_contents('http://169.254.169.254/latest/meta-data/instance-id/');
+
+        // Need an Ec2Client
+        $ec2 = new Ec2Client([
+            'region' => $aws_region,
+            'version' => 'latest'
+        ]);
+
+        // Get the tags for this instance id
+        $result = $ec2->describeTags([
+            'Filters' => [
+                [
+                    'Name'   => 'resource-id',
+                    'Values' => [$instance_id, ],
+                ],
+            ],
+        ]);
+
+        // Username is stored in the tags with key -- 'analyserver-owner'
+        for ($i=0; $i<count($result['Tags']); $i++) {
+            if ($result['Tags'][$i]['Key'] == 'redirect-to-authserver') {
+                $_SESSION['redirect_url'] = $result['Tags'][$i]['Value'];
                 break;
             }
         }
@@ -197,6 +229,68 @@
         } catch (S3Exception $e) {
             error_log($e->getMessage());
         }
+    }
+
+    // Destroy instance
+    function destroy_instance() {
+
+        global $aws_region;
+        error_log("IN DESTROY INSTANCE");
+        
+        // Get the autoscaling client
+        $asg = new AutoScalingClient([
+            'region' => $aws_region,
+            'version' => 'latest'
+        ]);
+
+        // Get the instance id for this by using instance metadata
+        $instance_id = file_get_contents('http://169.254.169.254/latest/meta-data/instance-id/');
+
+        // Get the analyzer auto-scaling group
+        $result = $asg->describeAutoScalingGroups([]);
+
+        // Loop through each ASG and see if it is the analyserver ASG
+        $asg_name = null;
+        for ($i=0; $i<count($result['AutoScalingGroups']); $i++) {
+            $asg_name = $result['AutoScalingGroups'][$i]['AutoScalingGroupName'];
+            
+            // Check if this autoscaling group is associated with analyserver
+            if (strpos($asg_name, "analyserver") !== false) {
+                error_log('Autoscaling group name found ' . $asg_name);
+                break;
+            } 
+        }
+
+        error_log("Going to detach instance " . $instance_id . " from ASG " . $asg_name);
+
+        $result = $asg->detachInstances([
+            'AutoScalingGroupName' => $asg_name,
+            'InstanceIds' => [$instance_id],
+            'ShouldDecrementDesiredCapacity' => true
+        ]);
+
+        // Get the EC2 client
+        $ec2 = new Ec2Client([
+            'region' => $aws_region,
+            'version' => 'latest'
+        ]);
+
+        // Change the owner tag so that if the user attempts to login 
+        $ec2->createTags([
+            'Resources' => [$instance_id],
+            'Tags' => [
+                [
+                    'Key'   => 'analyserver-owner',
+                    'Value' => 'admin-takeover-while-deleting'
+                ],
+            ]
+        ]);
+
+        $result = $ec2->terminateInstances([
+            'InstanceIds' => [$instance_id]
+        ]);
+
+
     }
 
 ?>

@@ -69,14 +69,14 @@
             
             // Check if this autoscaling group is associated with analyserver
             if (strpos($asg_name, "analyserver") !== false) {
-                echo "Autoscaling Group <b>" . $asg_name . "</b> has been found ...<br>";
+                //echo "Autoscaling Group <b>" . $asg_name . "</b> has been found ...<br>";
             } else {
                 continue;
             }
 
             // Get the desired capacity
             $desired_cap = $result['AutoScalingGroups'][$i]['DesiredCapacity'];
-            echo "Current ASG desired capacity is <b>" . $desired_cap . "</b>.  New capacity will be <b>" . $desired_cap+1 ."</b><br>";
+            //echo "Current ASG desired capacity is <b>" . $desired_cap . "</b>.  New capacity will be <b>" . $desired_cap+1 ."</b><br>";
 
             // Increment the desired capacity
             $result = $asg->setDesiredCapacity([
@@ -106,7 +106,7 @@
         // Continue polling AWS for a new EC2 instance (2 minutes is the max)
         $found_instance = false;
         $ec2_instance_dns = "none";
-        for ($i=0; $i<20; $i++) {
+        for ($i=0; $i<24; $i++) {
 
             $result = $ec2->describeInstances([
                 'Filters' => [
@@ -121,11 +121,18 @@
                 ]
             ]);
 
+            // Debugging
+            //echo '<pre>' . var_export($result,true) . '</pre>';
+
             // Check if we have a valid instance
             for ($j=0; $j<count($result['Reservations']); $j++) {
+                error_log("");
+                error_log("");
+                error_log("count(result[Reservations]) = ". count($result['Reservations']));
+                error_log("j = " . $j . " count this interation is " . count($result['Reservations'][0]['Instances']));
 
                 // Get the instance
-                $ec2_instance = $result['Reservations'][$j]['Instances'][$j];
+                $ec2_instance = $result['Reservations'][$j]['Instances'][0];
 
                 // Get the instance id
                 $ec2_instance_id = $ec2_instance['InstanceId'];
@@ -133,13 +140,17 @@
                 // Get the tags
                 $ec2_tags = $ec2_instance['Tags'];
 
+                error_log('ec2_instance looking at now is ' . $ec2_instance_id);
+
                 // Check the tags to see if this instance is owned
                 $instance_owned=false;
                 for ($k=0; $k<count($ec2_tags); $k++) {
 
                     // If this tag is set then this instance is already owned
+                    error_log("Looking for analyserver-owner tag ... " . $ec2_tags[$k]['Key']);
                     if ($ec2_tags[$k]['Key'] == 'analyserver-owner') {
                         $instance_owned = true;
+                        error_log("This instance is already owned");
                         break;
                     }
                 }
@@ -147,12 +158,29 @@
                 if ($instance_owned == false) {
                     $ec2_instance_dns = $ec2_instance['PublicDnsName'];
                     //return $ec2_instance_dns;
+
+                    // If dns for analyserver is found then set the owner to this user so it
+                    // is not reassigned to another user
+                    $ec2->createTags([
+                        'Resources' => [$ec2_instance_id],
+                        'Tags' => [
+                            [
+                                'Key'   => 'analyserver-owner',
+                                'Value' => $_SESSION['user']
+                            ],
+                            [
+                                'Key'   => 'redirect-to-authserver',
+                                'Value' => file_get_contents('http://169.254.169.254/latest/meta-data/public-hostname')
+                            ]
+                        ]
+                    ]);
+
                     break;
                 }
 
             }
 
-            if ($instance_owned !== "none") {
+            if ($ec2_instance_dns !== "none") {
                 break;
             }
 
@@ -160,18 +188,6 @@
             sleep(5);
 
         }
-
-        // If dns for analyserver is found then set the owner to this user so it
-        // is not reassigned to another user
-        $ec2->createTags([
-            'Resources' => [$ec2_instance_id],
-            'Tags' => [
-                [
-                    'Key'   => 'analyserver-owner',
-                    'Value' => $_SESSION['user']
-                ]
-            ]
-        ]);
 
         return $ec2_instance_dns;
     }

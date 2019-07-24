@@ -14,6 +14,7 @@
 
     require_once "functions.php";
     get_user();
+    get_login_redirect();
     get_s3_info();
 
     // Build the header bar above menu
@@ -344,16 +345,14 @@
         return;
       }
 
+      // Redirect back to the login screen
+      window.location.href = "http://" + "<?php echo $_SESSION['redirect_url'] ?>";
+
       // Send an AJAX request to server to handle the destruction of this instance
       var request = new XMLHttpRequest();
 
-      request.open("GET", "logout.php", true);
-      request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      request.setRequestHeader("Content-length", params.length);
-      request.setRequestHeader("Connection", "close");
-      request.send(params);
-
-      // Redirect back to the login screen
+      request.open("GET", "logout.php?logout", true);
+      request.send();
 
     }
 
